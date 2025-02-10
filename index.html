@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Interface</title>
+</head>
+<body>
+    <h1>AI Model Interface</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept="image/*" onchange="previewFile(event)">
+    </form>
+    <img id="imagePreview" src="" alt="Image Preview" style="display:none; max-width: 100%; height: auto;">
+    <button type="button" onclick="processFile()">Process</button>
+    <img id="processedImage" src="" alt="Processed Image" style="display:none; max-width: 100%; height: auto;">
+
+    <script>
+        function previewFile(event) {
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function processFile() {
+            const formData = new FormData(document.getElementById('uploadForm'));
+            fetch('/process_file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const processedImage = document.getElementById('processedImage');
+                processedImage.src = url;
+                processedImage.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
